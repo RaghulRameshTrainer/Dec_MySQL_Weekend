@@ -1,0 +1,226 @@
+DECLARE
+        - Declaration section
+BEGIN
+        - Execution section
+END;
+/
+
+-- PROCEDURE
+CREATE OR REPLACE PROCEDURE welcome
+AS
+BEGIN
+    dbms_output.put_line('Welcome to PLSQL world!');
+END;
+/
+
+-- Call the procedure
+
+EXECUTE welcome;
+
+BEGIN
+   welcome;
+END;
+/
+
+
+-- INT  -> INTEGER
+-- VARCHAR  -> VARCHAR2
+
+-- TYPES OF ARGUMENT:
+-- IN
+-- OUT
+-- IN OUT
+
+
+DECLARE
+    a INTEGER;
+    b INTEGER;
+    res INTEGER;
+    PROCEDURE findMax(x IN INTEGER, y IN INTEGER , z OUT INTEGER)
+    AS
+    BEGIN
+            IF x > y THEN
+                z := x;
+            ELSE
+                z := y;
+            END IF;
+    END;
+    BEGIN
+        a := 1000;
+        b := 200;
+        findMax(a,b,res);
+        DBMS_OUTPUT.PUT_LINE('Maximum of (1000,200) is : ' || res);
+    END;
+    /
+
+CREATE OR REPLACE PROCEDURE findMax(x IN INTEGER, y IN INTEGER , z OUT INTEGER)
+    AS
+    BEGIN
+            IF x > y THEN
+                z := x;
+            ELSE
+                z := y;
+            END IF;
+    END;
+    /
+    
+DECLARE
+    res INTEGER;
+BEGIN
+    findMax(55,66,res);
+    DBMS_OUTPUT.PUT_LINE('Maximum of (55,66) is : ' || res);
+END;
+/
+
+
+CREATE TABLE customer(
+custid INTEGER,
+custname VARCHAR2(100),
+city VARCHAR2(100)
+);
+
+INSERT INTO customer VALUES(1,'Prakash','Chennai');
+SELECT * FROM customer;
+INSERT INTO customer VALUES(2,'Arun','Mumbai');
+INSERT INTO customer VALUES(3,'Vignesh','Bangalore');
+INSERT INTO customer VALUES(4,'Vignesh','New Delhi');
+INSERT INTO customer VALUES(5,'Ashwin','Pune');
+
+
+DECLARE
+    c_id INTEGER;
+    c_name customer.custname%type;
+    PROCEDURE getCustomerName(cid IN INTEGER, cname OUT VARCHAR2) AS
+    BEGIN
+        SELECT custname into cname FROM customer WHERE custid=cid;
+    END;
+    BEGIN
+        c_id := 5;
+        getCustomerName(c_id, c_name);
+        DBMS_OUTPUT.PUT_LINE('Customer Name is : ' ||c_name);
+    END;
+    /
+    
+
+
+DECLARE
+    x INTEGER;
+    PROCEDURE squareNum(n IN OUT INTEGER) AS
+    BEGIN
+            n := n*n;
+    END;
+    BEGIN
+        x := 10;
+        squareNum(x);
+        DBMS_OUTPUT.PUT_LINE('Square of 10 is : ' ||x);
+    END;
+    /
+    
+    
+    CREATE OR REPLACE FUNCTION totalCustomer
+    RETURN INTEGER IS
+        total INTEGER;
+    BEGIN
+        SELECT count(*) INTO total FROM customer;
+        RETURN total;
+    END;
+    /
+    
+    DECLARE
+        n INTEGER;
+    
+    BEGIN
+        n := totalCustomer();
+        DBMS_OUTPUT.PUT_LINE('Total number of customers : '|| n);
+    END;
+    /
+    
+    
+    CREATE OR REPLACE FUNCTION findMaxNum(x IN INTEGER, y IN INTEGER)
+    RETURN INTEGER  AS
+        max_val INTEGER;
+    BEGIN
+            IF x > y THEN
+                max_val := x;
+            ELSE
+                max_val := y;
+            END IF;
+            
+            RETURN max_val;
+    END;
+    /
+    
+    DECLARE
+        res INTEGER;
+    BEGIN
+    res := findMaxNum(10,20);
+    DBMS_OUTPUT.PUT_LINE(res);
+    END;
+    
+    
+    SELECT * FROM CUSTOMER;
+
+
+CREATE TABLE employee(
+empid INTEGER,
+empname VARCHAR2(100),
+salary VARCHAR2(100)
+);
+
+INSERT INTO employee VALUES(1,'Prakash',120000);
+SELECT * FROM employee;
+INSERT INTO employee VALUES(2,'Arun',150000);
+INSERT INTO employee VALUES(3,'Vignesh',10000);
+INSERT INTO employee VALUES(4,'Vignesh',75000);
+INSERT INTO employee VALUES(5,'Ashwin',110000);
+
+
+CREATE OR REPLACE FUNCTION appraisal(sal IN INTEGER)
+RETURN INTEGER 
+AS
+    rev_sal INTEGER;
+BEGIN
+    rev_sal := sal * 2;
+    RETURN rev_sal;
+END;
+/
+
+SELECT EMPID, EMPNAME, SALARY, appraisal(SALARY) as REVISED_SALARY FROM employee;
+
+
+CREATE TABLE employee(
+empid INTEGER,
+empname VARCHAR2(100),
+salary VARCHAR2(100)
+);
+
+INSERT INTO employee VALUES(1,'Prakash',120000);
+SELECT * FROM employee;
+INSERT INTO employee VALUES(2,'Arun',150000);
+INSERT INTO employee VALUES(3,'Vignesh',10000);
+INSERT INTO employee VALUES(4,'Vignesh',75000);
+INSERT INTO employee VALUES(5,'Ashwin',110000);
+
+CREATE TABLE alumni(
+empid INTEGER,
+empname VARCHAR2(100),
+salary VARCHAR2(100)
+);
+
+-- BEFORE , AFTER , INSTEAD OF  - (DELETE, UPDATE , INSERT)
+
+CREATE OR REPLACE TRIGGER move_to_alumni
+BEFORE DELETE ON employee
+FOR EACH ROW
+BEGIN
+    INSERT INTO alumni VALUES(:OLD.empid,:OLD.empname, :OLD.salary);
+END;
+/
+
+
+
+SELECT * FROM employee;
+SELECT * FROM alumni;
+
+DELETE FROM employee WHERE empid=1;
+DELETE FROM employee WHERE empid>2;
